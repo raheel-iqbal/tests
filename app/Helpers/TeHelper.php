@@ -14,16 +14,16 @@ class TeHelper
     public static function fetchLanguageFromJobId($id)
     {
         $language = Language::findOrFail($id);
-        return $language1 = $language->language;
+        return isset($language->language) ? $language->language : "";
     }
 
     public static function getUsermeta($user_id, $key = false)
     {
-        return $user = UserMeta::where('user_id', $user_id)->first()->$key;
+        $user = UserMeta::where('user_id', $user_id)->first();
         if (!$key)
-            return $user->usermeta()->get()->all();
+            return $user->usermeta()->get();
         else {
-            $meta = $user->usermeta()->where('key', '=', $key)->get()->first();
+            $meta = $user->usermeta()->where('key', '=', $key)->first();
             if ($meta)
                 return $meta->value;
             else return '';
@@ -32,12 +32,7 @@ class TeHelper
 
     public static function convertJobIdsInObjs($jobs_ids)
     {
-
-        $jobs = array();
-        foreach ($jobs_ids as $job_obj) {
-            $jobs[] = Job::findOrFail($job_obj->id);
-        }
-        return $jobs;
+        return Job::whereIn('id', $jobs_ids)->get()->toArray();
     }
 
     public static function willExpireAt($due_time, $created_at)
